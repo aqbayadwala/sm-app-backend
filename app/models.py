@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 from typing import Optional
-from sqlalchemy import ForeignKey, String, Integer
+from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint
 from app import bcrypt
 
 
@@ -31,7 +31,9 @@ class Daur(db.Model):
 
     # Relationships
     moallim: Mapped[Moallim] = relationship(back_populates="daurs")
-    students = relationship("Student", back_populates="daur")
+    students = relationship(
+        "Student", back_populates="daur", cascade="all, delete-orphan"
+    )
 
     def to_dict(self):
         return {"id": self.id, "name": self.name}
@@ -42,10 +44,14 @@ class Daur(db.Model):
 
 class Student(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    its: Mapped[int] = mapped_column(Integer, unique=True)
+    its: Mapped[int] = mapped_column(Integer)
     name: Mapped[str] = mapped_column(String(64))
     grade: Mapped[str] = mapped_column(String(1))
     daur_id: Mapped[int] = mapped_column(Integer, ForeignKey(Daur.id))
+
+    # Composite unique constraint
+
+    __table_args__ = (UniqueConstraint("its", "daur_id", name="uix_its_daur"),)
 
     # Relationships
     daur = relationship("Daur", back_populates="students")

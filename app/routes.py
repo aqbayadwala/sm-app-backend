@@ -79,12 +79,13 @@ def addstudents():
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-
+            print("code arrived here")
             return (
                 jsonify(
                     {
                         "error": f"Student with ITS {student_its} already exists.",
                         "its": student_its,
+                        "daur_id": daur_id,
                     }
                 ),
                 400,
@@ -105,8 +106,15 @@ def fetch_daurs():
 @sm_app.route("/deletedaur/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_daur(id):
-    Daur.query.filter_by(id=id).delete()
+    print(id)
+    daur = Daur.query.filter_by(id=id).first()
+
+    if daur is None:
+        return jsonify({"message": "daur not found"})
+
+    db.session.delete(daur)
     db.session.commit()
+
     return jsonify({"message": "success"}), 200
 
 
