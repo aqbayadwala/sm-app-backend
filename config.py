@@ -14,5 +14,6 @@ class Config:
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or "secret-key"
     JWT_COOKIE_SECURE = False
-    JWT_COOKIE_SAMESITE = "None"
+    JWT_COOKIE_SAMESITE = "LAX"
     JWT_COOKIE_HTTPONLY = True
+    JWT_COOKIE_CSRF_PROTECT = False
