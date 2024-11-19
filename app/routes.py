@@ -60,6 +60,7 @@ def create_daur():
 
 
 @sm_app.route("/addstudents", methods=["POST"])
+@jwt_required()
 def addstudents():
     data = request.json
     students = data[1]
@@ -106,8 +107,13 @@ def fetch_daurs():
 def delete_daur(id):
     Daur.query.filter_by(id=id).delete()
     db.session.commit()
-    print("delete ran")
     return jsonify({"message": "success"}), 200
+
+
+@sm_app.route("/auth-check", methods=["GET"])
+@jwt_required()
+def auth_check():
+    return jsonify({"authenticated": True}), 200
 
 
 @sm_app.route("/login", methods=["POST"])
@@ -115,20 +121,13 @@ def login():
     username = request.json.get("email")
     password = request.json.get("password")
 
-    print(type(username))
-    print(type(password))
-    print(username)
-    print(password)
     moallim = Moallim.query.filter_by(email=username).first()
 
     if moallim and moallim.check_password(password):
-        access_token = create_access_token(identity=moallim.its)
-        print(access_token)
-        print(moallim.its)
+        access_token = create_access_token(identity=str(moallim.its))
         response = jsonify({"message": "Login Successful"})
-        # set_access_cookies(response, access_token)
-        # response.set_cookie("jwt", access_token)
-        print("code cam here")
-        return jsonify({"access_token": access_token}), 200
+        set_access_cookies(response, access_token)
+        print("login complete")
+        return response
     else:
         return jsonify({"message": "nothing"}), 401
