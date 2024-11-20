@@ -59,7 +59,7 @@ def create_daur():
         return jsonify({"daurId": daur_id}), 200
 
 
-# Add students to daur
+"""# Add students to daur
 @sm_app.route("/addstudents", methods=["POST"])
 @jwt_required()
 def addstudents():
@@ -68,7 +68,9 @@ def addstudents():
     daur_id = data[0]["daurId"]
 
     Student.query.filter_by(daur_id=daur_id).delete()
+    db.session.commit()
 
+    new_students = []
     for student in students:
         student_its = student.get("its")
         student_name = student.get("name")
@@ -80,24 +82,82 @@ def addstudents():
             grade=student_grade,
             daur_id=daur_id,
         )
-        db.session.add(new_student)
 
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            print("code arrived here")
-            return (
-                jsonify({"error": "something failed"}),
-                400,
+        new_students.append(new_student)
+
+    db.session.add_all(new_students)
+
+    try:
+        print("code before commit")
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        print("code arrived here")
+        return (
+            jsonify({"error": "something failed"}),
+            400,
+        )
+
+    return jsonify({"message": "success"}), 200
+"""
+
+
+# Add students to daur
+@sm_app.route("/addstudents", methods=["POST"])
+@jwt_required()
+def addstudents():
+    data = request.json
+    students = data[1]
+    daur_id = data[0]["daurId"]
+
+    current_students = Student.query.filter_by(daur_id=daur_id).all()
+
+    current_its = {student.its for student in current_students}
+    new_its = {student["its"] for student in students}
+
+    its_to_delete = current_its - new_its
+
+    its_to_add_or_update = new_its
+
+    Student.query.filter_by(daur_id=daur_id).filter(
+        Student.its.in_(its_to_delete)
+    ).delete(synchronize_session=False)
+
+    for student_data in students:
+        student = Student.query.filter_by(
+            its=student_data["its"], daur_id=daur_id
+        ).first()
+
+        if student:
+            student.name = student_data["name"]
+            student.grade = student_data["grade"]
+        else:
+            new_student = Student(
+                its=student_data["its"],
+                name=student_data["name"],
+                grade=student_data["grade"],
+                daur_id=daur_id,
             )
+
+            db.session.add(new_student)
+
+    try:
+        print("code before commit")
+        db.session.commit()
+        print("code after commit")
+    except IntegrityError as e:
+        db.session.rollback()
+        print(f"Error: {str(e)}")  # Log the error for debugging
+        return (
+            jsonify({"error": "something failed"}),
+            400,
+        )
 
     return jsonify({"message": "success"}), 200
 
 
 @sm_app.route("/getstudents/<int:id>")
 def get_students(id):
-    daur_id = id
     students = Student.query.filter_by(daur_id=id).all()
 
     students_data = [
@@ -106,6 +166,7 @@ def get_students(id):
             "name": student.name,
             "its": student.its,
             "grade": student.grade,
+            "daur_id": id,
         }
         for student in students
     ]
