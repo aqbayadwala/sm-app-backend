@@ -59,39 +59,57 @@ def create_daur():
         return jsonify({"daurId": daur_id}), 200
 
 
+# Add students to daur
 @sm_app.route("/addstudents", methods=["POST"])
 @jwt_required()
 def addstudents():
     data = request.json
     students = data[1]
     daur_id = data[0]["daurId"]
+
+    Student.query.filter_by(daur_id=daur_id).delete()
+
     for student in students:
         student_its = student.get("its")
         student_name = student.get("name")
         student_grade = student.get("grade")
 
-        student = Student(
-            its=student_its, name=student_name, grade=student_grade, daur_id=daur_id
+        new_student = Student(
+            its=student_its,
+            name=student_name,
+            grade=student_grade,
+            daur_id=daur_id,
         )
+        db.session.add(new_student)
 
         try:
-            db.session.add(student)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             print("code arrived here")
             return (
-                jsonify(
-                    {
-                        "error": f"Student with ITS {student_its} already exists.",
-                        "its": student_its,
-                        "daur_id": daur_id,
-                    }
-                ),
+                jsonify({"error": "something failed"}),
                 400,
             )
 
     return jsonify({"message": "success"}), 200
+
+
+@sm_app.route("/getstudents/<int:id>")
+def get_students(id):
+    daur_id = id
+    students = Student.query.filter_by(daur_id=id).all()
+
+    students_data = [
+        {
+            "id": student.id,
+            "name": student.name,
+            "its": student.its,
+            "grade": student.grade,
+        }
+        for student in students
+    ]
+    return jsonify({"message": "success", "students": students_data})
 
 
 # to display daur cards
@@ -103,6 +121,7 @@ def fetch_daurs():
     return jsonify(daurs_list), 200
 
 
+# to delete daur
 @sm_app.route("/deletedaur/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_daur(id):
@@ -118,12 +137,14 @@ def delete_daur(id):
     return jsonify({"message": "success"}), 200
 
 
+# auth check for protected routes
 @sm_app.route("/auth-check", methods=["GET"])
 @jwt_required()
 def auth_check():
     return jsonify({"authenticated": True}), 200
 
 
+# Authentication/Login route
 @sm_app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("email")
