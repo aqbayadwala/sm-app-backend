@@ -33,7 +33,7 @@ def register():
         return jsonify({"message": "Successfully registered. Please login"})
 
     except Exception as e:
-        print(f"Error during registration: {e}")
+        # print(f"Error during registration: {e}")
 
         return jsonify({"error": f"{e}"}), 500
 
@@ -43,7 +43,7 @@ def register():
 @jwt_required()
 def create_daur():
     data = request.json
-    print("code came here")
+    # print("code came here")
     # after implementing auth, this has to be changed to fetch the moallim who is logged in
     moallim_its = get_jwt_identity()
     moallim = Moallim.query.filter_by(its=moallim_its).first()
@@ -117,8 +117,6 @@ def addstudents():
 
     its_to_delete = current_its - new_its
 
-    its_to_add_or_update = new_its
-
     Student.query.filter_by(daur_id=daur_id).filter(
         Student.its.in_(its_to_delete)
     ).delete(synchronize_session=False)
@@ -139,15 +137,15 @@ def addstudents():
                 daur_id=daur_id,
             )
 
-            db.session.add(new_student)
+            db.session.merge(new_student)
 
     try:
-        print("code before commit")
+        # print("code before commit")
         db.session.commit()
-        print("code after commit")
+        # print("code after commit")
     except IntegrityError as e:
         db.session.rollback()
-        print(f"Error: {str(e)}")  # Log the error for debugging
+        # print(f"Error: {str(e)}")  # Log the error for debugging
         return (
             jsonify({"error": "something failed"}),
             400,
@@ -182,11 +180,31 @@ def fetch_daurs():
     return jsonify(daurs_list), 200
 
 
+# to edit daur name
+@sm_app.route("/updatedaurname/<int:id>", methods=["POST"])
+def updatedaurname(id):
+    try:
+        data = request.json
+        new_name = data.get("daurName")
+
+        daur = Daur.query.get(id)
+        if not daur:
+            return jsonify({"message": "Daur not found"}), 404
+
+        daur.name = new_name
+        db.session.commit()
+
+        return jsonify({"message": "Daur name updated successfully"})
+
+    except Exception as e:
+        return jsonify({f"error": str(e)}), 500
+
+
 # to delete daur
 @sm_app.route("/deletedaur/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_daur(id):
-    print(id)
+    # print(id)
     daur = Daur.query.filter_by(id=id).first()
 
     if daur is None:
@@ -217,7 +235,7 @@ def login():
         access_token = create_access_token(identity=str(moallim.its))
         response = jsonify({"message": "Login Successful"})
         set_access_cookies(response, access_token)
-        print("login complete")
+        # print("login complete")
         return response
     else:
         return jsonify({"message": "nothing"}), 401
