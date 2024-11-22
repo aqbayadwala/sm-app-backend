@@ -220,7 +220,10 @@ def delete_daur(id):
 @sm_app.route("/auth-check", methods=["GET"])
 @jwt_required()
 def auth_check():
-    return jsonify({"authenticated": True}), 200
+    try:
+        return jsonify({"authenticated": True}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 401
 
 
 # Authentication/Login route
