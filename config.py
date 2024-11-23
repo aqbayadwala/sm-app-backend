@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path=".flaskenv")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,7 +17,7 @@ class Config:
     JWT_COOKIE_SECURE = False
     JWT_COOKIE_SAMESITE = None
     JWT_COOKIE_HTTPONLY = True
-    JWT_COOKIE_CSRF_PROTECT = False
+    # JWT_COOKIE_CSRF_PROTECT = False
 
 
 """
