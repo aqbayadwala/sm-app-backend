@@ -17,7 +17,7 @@ class Config:
     JWT_COOKIE_SECURE = False
     JWT_COOKIE_SAMESITE = None
     JWT_COOKIE_HTTPONLY = True
-    # JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_CSRF_PROTECT = False
 
 
 """
