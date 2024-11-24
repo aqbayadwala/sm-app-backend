@@ -240,10 +240,10 @@ def login():
 
     if moallim and moallim.check_password(password):
         access_token = create_access_token(identity=str(moallim.its))
-        response = jsonify({"message": "Login Successful"})
-        set_access_cookies(response, access_token)
+        # response = jsonify({"message": "Login Successful"})
+        # set_access_cookies(response, access_token)
         # print("login complete")
-        return response
+        return jsonify({"access_token": access_token})
     else:
         print("failed login")
         return jsonify({"message": "nothing"}), 401
