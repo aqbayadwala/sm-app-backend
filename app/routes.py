@@ -180,7 +180,6 @@ def fetch_daurs():
 
     daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
     daurs_list = [daur.to_dict() for daur in daurs]
-    print(daurs_list)
     return jsonify(daurs_list), 200
 
 
