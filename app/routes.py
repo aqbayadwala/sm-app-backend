@@ -154,6 +154,7 @@ def addstudents():
     return jsonify({"message": "success"}), 200
 
 
+# When clicking edit daur on client
 @sm_app.route("/getstudents/<int:id>")
 def get_students(id):
     students = Student.query.filter_by(daur_id=id).all()
@@ -175,8 +176,11 @@ def get_students(id):
 @sm_app.route("/fetchdaurs", methods=["GET"])
 @jwt_required()
 def fetch_daurs():
-    daurs = Daur.query.all()
+    moallim_its = get_jwt_identity()
+
+    daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
     daurs_list = [daur.to_dict() for daur in daurs]
+    print(daurs_list)
     return jsonify(daurs_list), 200
 
 
