@@ -239,7 +239,7 @@ def login():
     moallim = Moallim.query.filter_by(email=username).first()
 
     if moallim and moallim.check_password(password):
-        access_token = create_access_token(identity=str(moallim.its))
+        access_token = create_access_token(identity=moallim.its)
         # response = jsonify({"message": "Login Successful"})
         # set_access_cookies(response, access_token)
         # print("login complete")
