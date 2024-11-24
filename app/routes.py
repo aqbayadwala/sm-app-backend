@@ -226,6 +226,7 @@ def auth_check():
     try:
         return jsonify({"authenticated": True}), 200
     except Exception as e:
+        print("failed auth check")
         return jsonify({"message": str(e)}), 401
 
 
@@ -244,4 +245,5 @@ def login():
         # print("login complete")
         return response
     else:
+        print("failed login")
         return jsonify({"message": "nothing"}), 401
