@@ -177,7 +177,7 @@ def get_students(id):
 @jwt_required()
 def fetch_daurs():
     moallim_its = get_jwt_identity()
-
+    print("fetch daurs code")
     daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
     daurs_list = [daur.to_dict() for daur in daurs]
     return jsonify(daurs_list), 200
@@ -239,7 +239,7 @@ def login():
     moallim = Moallim.query.filter_by(email=username).first()
 
     if moallim and moallim.check_password(password):
-        access_token = create_access_token(identity=moallim.its)
+        access_token = create_access_token(identity=str(moallim.its))
         # response = jsonify({"message": "Login Successful"})
         # set_access_cookies(response, access_token)
         # print("login complete")
