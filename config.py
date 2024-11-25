@@ -14,8 +14,6 @@ class Config:
     ) or "sqlite:///" + os.path.join(basedir, "sm_app.db")
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or "secret-key"
-    JWT_HEADER_NAME = "Authorization"
-    JWT_HEADER_TYPE = "Bearer"
 
 
 """
