@@ -8,12 +8,21 @@ from flask_jwt_extended import (
     jwt_required,
     set_access_cookies,
 )
-
+import subprocess
 
 @sm_app.route("/")
 def home():
     return "Hello"
 
+# WebHook - For automatic github pulls
+@sm_app.route("/webhook", methods=["POST"])
+def webhook():
+    payload = request.json
+    if payload.get("ref") == "refs/heads/main":
+        repo_dir = "/home/cadbay/code/projects/school-management-backend/"
+        subprocess.run(["git", "-c", repo_dir, "pull"], check=True)
+
+    return "OK", 200
 
 @sm_app.route("/register", methods=["POST"])
 def register():
