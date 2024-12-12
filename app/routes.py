@@ -14,7 +14,7 @@ import subprocess
 def home():
     return "Hello"
 
-# WebHook - For automatic github pulls
+# WebHooks - For automatic github pulls
 @sm_app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.json
