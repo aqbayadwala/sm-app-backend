@@ -20,7 +20,7 @@ def webhook():
     payload = request.json
     if payload.get("ref") == "refs/heads/main":
         repo_dir = "/home/ubuntu/backends/sm-app-backend/"
-        subprocess.run(["git", "pull"] cwd=repo_dir, check=True)
+        subprocess.run(["git", "pull"], cwd=repo_dir, check=True)
     return "OK", 200
 
 @sm_app.route("/register", methods=["POST"])
