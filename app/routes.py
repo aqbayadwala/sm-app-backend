@@ -59,48 +59,6 @@ def create_daur():
         return jsonify({"daurId": daur_id}), 200
 
 
-"""# Add students to daur
-@sm_app.route("/addstudents", methods=["POST"])
-@jwt_required()
-def addstudents():
-    data = request.json
-    students = data[1]
-    daur_id = data[0]["daurId"]
-
-    Student.query.filter_by(daur_id=daur_id).delete()
-    db.session.commit()
-
-    new_students = []
-    for student in students:
-        student_its = student.get("its")
-        student_name = student.get("name")
-        student_grade = student.get("grade")
-
-        new_student = Student(
-            its=student_its,
-            name=student_name,
-            grade=student_grade,
-            daur_id=daur_id,
-        )
-
-        new_students.append(new_student)
-
-    db.session.add_all(new_students)
-
-    try:
-        print("code before commit")
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-        print("code arrived here")
-        return (
-            jsonify({"error": "something failed"}),
-            400,
-        )
-
-    return jsonify({"message": "success"}), 200
-"""
-
 
 # Add students to daur
 @sm_app.route("/addstudents", methods=["POST"])
@@ -240,8 +198,6 @@ def login():
 
     if moallim and moallim.check_password(password):
         access_token = create_access_token(identity=str(moallim.its))
-        # response = jsonify({"message": "Login Successful"})
-        # set_access_cookies(response, access_token)
         # print("login complete")
         return jsonify({"access_token": access_token})
     else:
