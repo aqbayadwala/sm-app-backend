@@ -19,8 +19,8 @@ def home():
 def webhook():
     payload = request.json
     if payload.get("ref") == "refs/heads/main":
-        repo_dir = "/home/cadbay/code/projects/school-management-backend/"
-        subprocess.run(["git", "-c", repo_dir, "pull"], check=True)
+        repo_dir = "/home/ubuntu/backends/sm-app-backend/"
+        subprocess.run(["git", "pull"] cwd=repo_dir, check=True)
 
     return "OK", 200
 
