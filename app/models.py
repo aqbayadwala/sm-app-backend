@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 from typing import Optional
-from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint
+from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint, DateTime
 from app import bcrypt
+from datetime import datetime
 
 
 class Moallim(db.Model):
@@ -58,3 +59,8 @@ class Student(db.Model):
 
     def __repr__(self):
         return f"<Student {self.name}>"
+
+class BlockListedTokens(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    jti: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
