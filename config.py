@@ -12,6 +12,11 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL"
     ) or "sqlite:///" + os.path.join(basedir, "sm_app.db")
+    SQLALCHEMY_BINDS = {
+        "users": "sqlite:///" + os.path.join(basedir, "sm_app.db"),
+        "quran": "sqlite:///" + os.path.join(basedir, "quran_metadata.db"),
+    }
+
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or "secret-key"
 

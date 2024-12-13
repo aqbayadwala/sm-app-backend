@@ -5,11 +5,9 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-import os
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".flaskenv")
-frontend_origin = os.getenv("FRONTEND_ORIGIN")
 
 sm_app = Flask(__name__)
 sm_app.config.from_object(Config)

@@ -7,6 +7,8 @@ from datetime import datetime
 
 
 class Moallim(db.Model):
+    __bind_key__ = "users"
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     its: Mapped[int] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(String(64))
@@ -26,6 +28,8 @@ class Moallim(db.Model):
 
 
 class Daur(db.Model):
+    __bind_key__ = "users"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     moallim_id: Mapped[int] = mapped_column(Integer, ForeignKey(Moallim.id))
@@ -44,6 +48,8 @@ class Daur(db.Model):
 
 
 class Student(db.Model):
+    __bind_key__ = "users"
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     its: Mapped[int] = mapped_column(Integer)
     name: Mapped[str] = mapped_column(String(64))
@@ -60,7 +66,36 @@ class Student(db.Model):
     def __repr__(self):
         return f"<Student {self.name}>"
 
+
 class BlockListedTokens(db.Model):
+    __bind_key__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     jti: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+
+
+class SuratMetaData(db.Model):
+    __tablename__ = "surat_metadata"
+    __bind_key__ = "quran"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    surat_num: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    surat_name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    ayat_count: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<SuratMetaData {self.surat_name} ({self.surat_num})"
+
+
+class AyatLengths(db.Model):
+    __tablename__ = "ayat_lengths"
+    __bind_key__ = "quran"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    surat_num: Mapped[int] = mapped_column(Integer, ForeignKey(SuratMetaData.surat_num))
+    ayat_number: Mapped[int] = mapped_column(Integer)
+    ayat_length: Mapped[int] = mapped_column(Integer)
+
+    # relationship
+    surat = relationship("SuratMetaData", backref="ayat_lengths")
