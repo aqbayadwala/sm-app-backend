@@ -1,18 +1,26 @@
-from app import sm_app, db
+from app import sm_app, db, jwt
 from flask import request, jsonify, make_response
-from app.models import Moallim, Daur, Student
+from app.models import BlockListedTokens, Moallim, Daur, Student
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
     jwt_required,
     set_access_cookies,
+    
 )
 import subprocess
 
 @sm_app.route("/")
 def home():
     return "Hello"
+
+# Callback function to check if a JWT exists in the database BlockListedTokens
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload["jti"]
+    token = db.session.query(BlockListedTokens.id).filter_by(jti=jti).scalar()
+    return token is not None
 
 # WebHook - For automatic github pulls
 @sm_app.route("/webhook", methods=["POST"])
@@ -27,6 +35,9 @@ def webhook():
 def register():
     try:
         data = request.json
+        if data is None:
+            return jsonify(error="Invalid JSON"), 400
+
         its = int(data.get("its"))
         name = data.get("name")
         email = data.get("email")
@@ -211,3 +222,11 @@ def login():
     else:
         print("failed login")
         return jsonify({"message": "nothing"}), 401
+
+@sm_app.route("/logout", methods=["DELETE"])
+@jwt_required()
+def modify_token():
+    jti = get_jwt()["jti"]
+    db.session.add(BlockListedTokens(jti=jti))
+    db.session.commit()
+    return jsonify(msg="JWT revoked"), 200
