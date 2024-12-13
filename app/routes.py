@@ -224,7 +224,7 @@ def login():
         print("failed login")
         return jsonify({"message": "nothing"}), 401
 
-@sm_app.route("/logout", methods=["DELETE"])
+@sm_app.route("/logout", methods=["POST"])
 @jwt_required()
 def modify_token():
     jti = get_jwt()["jti"]
