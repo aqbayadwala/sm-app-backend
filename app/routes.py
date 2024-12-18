@@ -7,14 +7,15 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required,
     set_access_cookies,
-    get_jwt
-    
+    get_jwt,
 )
 import subprocess
+
 
 @sm_app.route("/")
 def home():
     return "Hello"
+
 
 # Callback function to check if a JWT exists in the database BlockListedTokens
 @jwt.token_in_blocklist_loader
@@ -22,6 +23,7 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
     token = db.session.query(BlockListedTokens.id).filter_by(jti=jti).scalar()
     return token is not None
+
 
 # WebHook - For automatic github pulls
 @sm_app.route("/webhook", methods=["POST"])
@@ -31,6 +33,7 @@ def webhook():
         repo_dir = "/home/ubuntu/backends/sm-app-backend/"
         subprocess.run(["git", "pull"], cwd=repo_dir, check=True)
     return "OK", 200
+
 
 @sm_app.route("/register", methods=["POST"])
 def register():
@@ -77,7 +80,6 @@ def create_daur():
         daur_id = new_daur.id
 
         return jsonify({"daurId": daur_id}), 200
-
 
 
 # Add students to daur
@@ -223,6 +225,7 @@ def login():
     else:
         print("failed login")
         return jsonify({"message": "nothing"}), 401
+
 
 @sm_app.route("/logout1", methods=["POST"])
 @jwt_required()
