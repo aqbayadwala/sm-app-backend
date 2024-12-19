@@ -12,7 +12,7 @@ class Moallim(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     its: Mapped[int] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(String(64))
-    email: Mapped[str] = mapped_column(String(64), unique=True)
+    email: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     # darajah: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
     daurs = relationship("Daur", back_populates="moallim")

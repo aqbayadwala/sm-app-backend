@@ -224,7 +224,7 @@ def login():
         return jsonify({"access_token": access_token})
     else:
         print("failed login")
-        return jsonify({"message": "nothing"}), 401
+        return jsonify({"message": "failed login"}), 401
 
 
 @sm_app.route("/logout1", methods=["POST"])
