@@ -70,7 +70,6 @@ def create_daur():
     # after implementing auth, this has to be changed to fetch the moallim who is logged in
     moallim_its = get_jwt_identity()
     moallim = Moallim.query.filter_by(its=moallim_its).first()
-    moallim = Moallim.query.first()
     if isinstance(data, dict):
         daur_name = data.get("daurName")
         new_daur = Daur(name=daur_name, moallim_id=moallim.its)
@@ -90,16 +89,35 @@ def addstudents():
     students = data[1]
     daur_id = data[0]["daurId"]
 
+    # fetch already added students
     current_students = Student.query.filter_by(daur_id=daur_id).all()
 
+    # check which students came from server after edit
     current_its = {student.its for student in current_students}
+
+    # check which students are new
     new_its = {student["its"] for student in students}
 
+    # check which students got deleted
     its_to_delete = current_its - new_its
 
+    # delete the students from db
     Student.query.filter_by(daur_id=daur_id).filter(
         Student.its.in_(its_to_delete)
     ).delete(synchronize_session=False)
+
+    students_to_delete = (
+        db.session.execute(
+            db.select(Student)
+            .filter_by(daur_id=daur_id)
+            .filter(Student.its.in_(its_to_delete))
+        )
+        .scalars()
+        .all()
+    )
+
+    for student in students_to_delete:
+        db.session.delete(student)
 
     for student_data in students:
         student = Student.query.filter_by(
