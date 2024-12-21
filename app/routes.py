@@ -1,6 +1,6 @@
 from app import sm_app, db, jwt
 from flask import request, jsonify, make_response
-from app.models import BlockListedTokens, Moallim, Daur, Student
+from app.models import BlockListedTokens, Moallim, Daur, Student, SuratMetaData
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (
     create_access_token,
@@ -252,3 +252,16 @@ def modify_token():
     db.session.add(BlockListedTokens(jti=jti))
     db.session.commit()
     return jsonify(msg="JWT revoked"), 200
+
+
+@sm_app.route("/getsuratayat", methods=["GET"])
+@jwt_required()
+def get_surat_ayat():
+    surat_ayat_data = db.session.execute(
+        db.select(SuratMetaData.surat_name, SuratMetaData.ayat_count)
+    ).all()
+
+    quran_metadata = [{"surat": surat, "ayat": ayat} for surat, ayat in surat_ayat_data]
+
+    print(quran_metadata)
+    return jsonify(quran_metadata)
