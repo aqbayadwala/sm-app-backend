@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".flaskenv")
@@ -19,6 +20,7 @@ class Config:
 
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or "secret-key"
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
 
 """
