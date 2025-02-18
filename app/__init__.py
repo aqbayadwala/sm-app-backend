@@ -6,16 +6,17 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+import os
 
 load_dotenv(dotenv_path=".flaskenv")
+
+cors_origin = os.getenv("CORS_ORIGIN", "http://localhost:5173")
 
 sm_app = Flask(__name__)
 sm_app.config.from_object(Config)
 db = SQLAlchemy(sm_app)
 migrate = Migrate(sm_app, db)
-CORS(
-    sm_app, origins=["https://daur-material-ui.netlify.app"], supports_credentials=True
-)
+CORS(sm_app, origins=[cors_origin], supports_credentials=True)
 bcrypt = Bcrypt(sm_app)
 jwt = JWTManager(sm_app)
 
