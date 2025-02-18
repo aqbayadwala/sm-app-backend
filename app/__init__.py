@@ -13,7 +13,9 @@ sm_app = Flask(__name__)
 sm_app.config.from_object(Config)
 db = SQLAlchemy(sm_app)
 migrate = Migrate(sm_app, db)
-CORS(sm_app, supports_credentials=True)
+CORS(
+    sm_app, origins=["https://daur-material-ui.netlify.app"], supports_credentials=True
+)
 bcrypt = Bcrypt(sm_app)
 jwt = JWTManager(sm_app)
 
