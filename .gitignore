@@ -2,5 +2,4 @@ __pycache__
 .smvenv
 .flaskenv
 ignore
-pyrightconfig.json
 sm_app.db

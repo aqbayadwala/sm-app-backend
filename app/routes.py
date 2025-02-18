@@ -1,13 +1,10 @@
+# Import statements
+
+# Import app object, db object, and jwt object instances
 from app import sm_app, db, jwt
+
+# Helper functions
 from flask import request, jsonify, make_response
-from app.models import (
-    BlockListedTokens,
-    Moallim,
-    Daur,
-    Student,
-    SuratMetaData,
-    AyatLengths,
-)
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (
     create_access_token,
@@ -16,9 +13,25 @@ from flask_jwt_extended import (
     set_access_cookies,
     get_jwt,
 )
+from app.utils import (
+    calculate_ayat_assignment,
+    jsonify_dict_with_non_string_keys,
+    transform_json,
+)
 import subprocess
 
+# Import models
+from app.models import (
+    BlockListedTokens,
+    Moallim,
+    Daur,
+    Student,
+    SuratMetaData,
+    AyatLengths,
+)
 
+
+# Testing route
 @sm_app.route("/")
 def home():
     return "Hello"
@@ -42,6 +55,15 @@ def webhook():
     return "OK", 200
 
 
+# Registers the user
+# Flow of the function
+# 1. Extracts json from the request and validates it.
+# 2. Extracts its, name, email  and password from the json payload.
+# 3. Instantiates a moallim object with its, name and email.
+# 4. Sets the password to the user using the set_password method of the User model.
+# 5. Adds the user object to the database session and commits it.
+# 6. Returns success message upon successful registration.
+# 7. If any error, returns 500 - internal server error.
 @sm_app.route("/register", methods=["POST"])
 def register():
     try:
@@ -63,7 +85,7 @@ def register():
         return jsonify({"message": "Successfully registered. Please login"})
 
     except Exception as e:
-        # print(f"Error during registration: {e}")
+        # print(f"Error during registration: {e}")  # log
 
         return jsonify({"error": f"{e}"}), 500
 
@@ -275,5 +297,107 @@ def get_surat_ayat():
         for surat_num, surat, ayat in surat_ayat_data
     ]
 
-    print(quran_metadata)
+    # print(quran_metadata)
     return jsonify(quran_metadata)
+
+
+# Write logic for daur ayat assignment below this line ------------------------------------------------
+#
+## - Define a function for calculate daur endpoint
+
+# - What will the json payload contain?
+#       - students its, from which surat which ayat to which surat which ayat
+# - How will the json payload look like?
+#       - {students: {"1", "2", "3", "4", "5" },
+#          from: {"surat": "Al Baqarah", "ayat": "6"}, "to":{"surat": "Al Baqarah", "ayat": "76"}
+#         }
+
+## - Checks before the logic
+# - Check how many students in daur?
+# - Check how many total lines in daur?
+# - Check if from and to are in the same surah
+
+## - Extract the details in variables
+# - Fetch students by its and make an array containing dictionaries
+# - students_array = [{"adnan": 50462661},...]
+# - from surat = "Al Baqarah"
+# - from ayat = 6
+# - to surat = "Al Baqarah"
+# - to ayat = 76
+
+
+## - Steps to implementation
+# 1. Extract payload
+# 2. Checks
+# 3. Assignments
+
+## If from and to surat are same
+# - calculate the number of lines
+"""
+how do i calculate how many lines in total?
+i have to extract all ayats length from the db
+for example, [{"1": "2", "2": "3", "4": "1", ...}]
+then add all of the values to get the sum
+
+what all i have to calculate, total ayaat recitation, total lines
+
+okay once i calculate total lines, i have to divide it in percentage based on if the daur is less than
+150 lines or more than 150 lines
+
+and the number should not be in decimal
+
+and then the ayat assignment should happen randomly
+"""
+
+# DONE
+# 1. Extracted payload variables
+# 2. Entered in to logic if the recitation is from only one surat
+# 3. Calculated total number of lines in one recitation request
+
+
+@sm_app.route("/calculatedaur", methods=["POST"])
+@jwt_required()
+def calculate_daur():
+    # pass
+    try:
+        payload = request.json
+        print("calculate started")
+        result = calculate_ayat_assignment(payload)
+        print("calculate ended")
+        json_to_send_to_client = transform_json(result)
+
+        return json_to_send_to_client, 200
+        # return "Success", 200
+    except Exception as e:
+        print("Error:", str(e))
+        # traceback.print_exc()  # Logs full stack trace
+        return "error", 500
+
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
