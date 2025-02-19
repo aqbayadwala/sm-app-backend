@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from app.models import AyatLengths, SuratMetaData, Student
+from app.models import AyatLengths, SuratMetaData, Student, Moallim, Daur
 from app import db
 import json
 
@@ -251,10 +251,10 @@ def calculate_ayat_assignment(payload):
     else:
         # logic
         # if has_a_grades:
-        sadr_percentage = 0.6
+        sadr_percentage = 0.5
         grade_a_percentage = 0.2
         grade_b_percentage = 0.15
-        grade_c_percentage = 0.05
+        grade_c_percentage = 0.10
 
         sadr_lines = int(total_lines * sadr_percentage)
         grade_a_lines = int(total_lines * grade_a_percentage)
@@ -461,10 +461,16 @@ def generate_ayat_metadata(from_surat_num, from_ayat, to_surat_num, to_ayat):
 # TODO: Now check the is_students_workload and assign accordingly, dont follow 150 lines rule
 
 
-def transform_json(server_json):
+def transform_json(server_json, moallim_its, daur_id):
+    # Fetch the Moallim and their associated students
+    moallim = Moallim.query.filter_by(its=moallim_its).first()
 
     # Fetch all students and Surat metadata in one go to minimize queries
-    students = {student.id: student.name for student in Student.query.all()}
+    daur_ids = [daur.id for daur in Daur.query.filter_by(moallim_id=moallim.id).all()]
+    students = {
+        student.id: student.name
+        for student in Student.query.filter_by(daur_id=daur_id).all()
+    }
     surats = {surat.surat_num: surat.surat_name for surat in SuratMetaData.query.all()}
 
     # Result structure to be returned

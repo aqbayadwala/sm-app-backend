@@ -101,7 +101,7 @@ def create_daur():
     moallim = Moallim.query.filter_by(its=moallim_its).first()
     if isinstance(data, dict):
         daur_name = data.get("daurName")
-        new_daur = Daur(name=daur_name, moallim_id=moallim.its)
+        new_daur = Daur(name=daur_name, moallim_id=moallim.id)
         db.session.add(new_daur)
         db.session.commit()
 
@@ -204,10 +204,13 @@ def get_students(id):
 @jwt_required()
 def fetch_daurs():
     moallim_its = get_jwt_identity()
+    moallim = Moallim.query.filter_by(its=moallim_its).first()
     print("fetch daurs code")
-    daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
-    daurs_list = [daur.to_dict() for daur in daurs]
-    return jsonify(daurs_list), 200
+    # daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
+    if moallim:
+        daurs = moallim.daurs
+        daurs_list = [daur.to_dict() for daur in daurs]
+        return jsonify(daurs_list), 200
 
 
 # to edit daur name
@@ -301,58 +304,7 @@ def get_surat_ayat():
     return jsonify(quran_metadata)
 
 
-# Write logic for daur ayat assignment below this line ------------------------------------------------
-#
-## - Define a function for calculate daur endpoint
-
-# - What will the json payload contain?
-#       - students its, from which surat which ayat to which surat which ayat
-# - How will the json payload look like?
-#       - {students: {"1", "2", "3", "4", "5" },
-#          from: {"surat": "Al Baqarah", "ayat": "6"}, "to":{"surat": "Al Baqarah", "ayat": "76"}
-#         }
-
-## - Checks before the logic
-# - Check how many students in daur?
-# - Check how many total lines in daur?
-# - Check if from and to are in the same surah
-
-## - Extract the details in variables
-# - Fetch students by its and make an array containing dictionaries
-# - students_array = [{"adnan": 50462661},...]
-# - from surat = "Al Baqarah"
-# - from ayat = 6
-# - to surat = "Al Baqarah"
-# - to ayat = 76
-
-
-## - Steps to implementation
-# 1. Extract payload
-# 2. Checks
-# 3. Assignments
-
-## If from and to surat are same
-# - calculate the number of lines
-"""
-how do i calculate how many lines in total?
-i have to extract all ayats length from the db
-for example, [{"1": "2", "2": "3", "4": "1", ...}]
-then add all of the values to get the sum
-
-what all i have to calculate, total ayaat recitation, total lines
-
-okay once i calculate total lines, i have to divide it in percentage based on if the daur is less than
-150 lines or more than 150 lines
-
-and the number should not be in decimal
-
-and then the ayat assignment should happen randomly
-"""
-
-# DONE
-# 1. Extracted payload variables
-# 2. Entered in to logic if the recitation is from only one surat
-# 3. Calculated total number of lines in one recitation request
+# Daur assignment logic -------------------------------------------------------------------------------------------------------
 
 
 @sm_app.route("/calculatedaur", methods=["POST"])
@@ -361,10 +313,14 @@ def calculate_daur():
     # pass
     try:
         payload = request.json
+        moallim_its = int(get_jwt_identity())
+        daur_id = payload.get("daur_id")
+        print("Moallim: ", moallim_its)
+        print(type(moallim_its))
         print("calculate started")
         result = calculate_ayat_assignment(payload)
         print("calculate ended")
-        json_to_send_to_client = transform_json(result)
+        json_to_send_to_client = transform_json(result, moallim_its, daur_id)
 
         return json_to_send_to_client, 200
         # return "Success", 200
