@@ -66,9 +66,7 @@ def webhook():
 # 7. If any error, returns 500 - internal server error.
 @sm_app.route("/register", methods=["POST"])
 def register():
-    print("I came to register")
     try:
-        print("I reached here")
         data = request.json
         if data is None:
             return jsonify(error="Invalid JSON"), 400
@@ -79,10 +77,7 @@ def register():
 
         user = Moallim(name=name, email=email)
         user.set_password(password)
-        print("I reached till password")
-        print("user: ", user)
         db.session.add(user)
-        print("I added user to session")
         db.session.commit()
         return jsonify({"message": "Successfully registered. Please login"})
 
@@ -324,7 +319,7 @@ def calculate_daur():
         result = calculate_ayat_assignment(payload)
         print("calculate ended")
         json_to_send_to_client = transform_json(result, moallim_email, daur_id)
-
+        print("someone calculated a daur")
         return json_to_send_to_client, 200
         # return "Success", 200
     except Exception as e:
