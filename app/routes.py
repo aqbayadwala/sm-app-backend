@@ -66,6 +66,7 @@ def webhook():
 # 7. If any error, returns 500 - internal server error.
 @sm_app.route("/register", methods=["POST"])
 def register():
+    print("I came to register")
     try:
         print("I reached here")
         data = request.json
