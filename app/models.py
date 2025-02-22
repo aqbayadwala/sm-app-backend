@@ -54,7 +54,9 @@ class Student(db.Model):
     its: Mapped[int] = mapped_column(Integer)
     name: Mapped[str] = mapped_column(String(64))
     grade: Mapped[str] = mapped_column(String(1))
-    daur_id: Mapped[int] = mapped_column(Integer, ForeignKey(Daur.id))
+    daur_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("daur.id", ondelete="CASCADE")
+    )
 
     # Composite unique constraint
 
