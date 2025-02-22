@@ -313,13 +313,13 @@ def calculate_daur():
         payload = request.json
         moallim_email = get_jwt_identity()
         daur_id = payload.get("daur_id")
-        print("Moallim: ", moallim_email)
-        print(type(moallim_email))
-        print("calculate started")
+        # print("Moallim: ", moallim_email)
+        # print(type(moallim_email))
+        # print("calculate started")
         result = calculate_ayat_assignment(payload)
-        print("calculate ended")
+        # print("calculate ended")
         json_to_send_to_client = transform_json(result, moallim_email, daur_id)
-        print("someone calculated a daur")
+        print(f"{moallim_email}  calculated a daur")
         return json_to_send_to_client, 200
         # return "Success", 200
     except Exception as e:
