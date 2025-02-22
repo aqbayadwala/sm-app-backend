@@ -461,9 +461,9 @@ def generate_ayat_metadata(from_surat_num, from_ayat, to_surat_num, to_ayat):
 # TODO: Now check the is_students_workload and assign accordingly, dont follow 150 lines rule
 
 
-def transform_json(server_json, moallim_its, daur_id):
+def transform_json(server_json, moallim_email, daur_id):
     # Fetch the Moallim and their associated students
-    moallim = Moallim.query.filter_by(its=moallim_its).first()
+    moallim = Moallim.query.filter_by(email=moallim_email).first()
 
     # Fetch all students and Surat metadata in one go to minimize queries
     daur_ids = [daur.id for daur in Daur.query.filter_by(moallim_id=moallim.id).all()]

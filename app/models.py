@@ -10,7 +10,6 @@ class Moallim(db.Model):
     __bind_key__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    its: Mapped[int] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(String(64))
     email: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     # darajah: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
@@ -51,7 +50,6 @@ class Student(db.Model):
     __bind_key__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    its: Mapped[int] = mapped_column(Integer)
     name: Mapped[str] = mapped_column(String(64))
     grade: Mapped[str] = mapped_column(String(1))
     daur_id: Mapped[int] = mapped_column(
@@ -60,7 +58,7 @@ class Student(db.Model):
 
     # Composite unique constraint
 
-    __table_args__ = (UniqueConstraint("its", "daur_id", name="uix_its_daur"),)
+    __table_args__ = (UniqueConstraint("id", "daur_id", name="uix_id_daur"),)
 
     # Relationships
     daur = relationship("Daur", back_populates="students")

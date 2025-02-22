@@ -71,12 +71,11 @@ def register():
         if data is None:
             return jsonify(error="Invalid JSON"), 400
 
-        its = int(data.get("its"))
         name = data.get("name")
         email = data.get("email")
         password = data.get("password")
 
-        user = Moallim(its=its, name=name, email=email)
+        user = Moallim(name=name, email=email)
         user.set_password(password)
 
         db.session.add(user)
@@ -97,8 +96,9 @@ def create_daur():
     data = request.json
     # print("code came here")
     # after implementing auth, this has to be changed to fetch the moallim who is logged in
-    moallim_its = get_jwt_identity()
-    moallim = Moallim.query.filter_by(its=moallim_its).first()
+    moallim_email = get_jwt_identity()
+    print("moallim_email: ", moallim_email)
+    moallim = Moallim.query.filter_by(email=moallim_email).first()
     if isinstance(data, dict):
         daur_name = data.get("daurName")
         new_daur = Daur(name=daur_name, moallim_id=moallim.id)
@@ -116,41 +116,44 @@ def create_daur():
 def addstudents():
     data = request.json
     students = data[1]
+    print("data: ", data)
+    print("Students: ", students)
     daur_id = data[0]["daurId"]
 
     # fetch already added students
     current_students = Student.query.filter_by(daur_id=daur_id).all()
-
+    print("current_students: ", current_students)
     # check which students came from server after edit
-    current_its = {student.its for student in current_students}
-
+    current_ids = {student.id for student in current_students}
+    print("current_ids: ", current_ids)
     # check which students are new
-    new_its = {student["its"] for student in students}
-
+    new_ids = {student["id"] for student in students}
+    print("New Ids: ", new_ids)
     # check which students got deleted
-    its_to_delete = current_its - new_its
+    ids_to_delete = current_ids - new_ids
+    print("Ids to delete: ", ids_to_delete)
 
     # delete the students from db
     Student.query.filter_by(daur_id=daur_id).filter(
-        Student.its.in_(its_to_delete)
+        Student.id.in_(ids_to_delete)
     ).delete(synchronize_session=False)
-
+    print("I completed this ids to delete query")
     students_to_delete = (
         db.session.execute(
             db.select(Student)
             .filter_by(daur_id=daur_id)
-            .filter(Student.its.in_(its_to_delete))
+            .filter(Student.id.in_(ids_to_delete))
         )
         .scalars()
         .all()
     )
-
+    print("Students to delete: ", students_to_delete)
     for student in students_to_delete:
         db.session.delete(student)
 
     for student_data in students:
         student = Student.query.filter_by(
-            its=student_data["its"], daur_id=daur_id
+            id=student_data["id"], daur_id=daur_id
         ).first()
 
         if student:
@@ -158,7 +161,6 @@ def addstudents():
             student.grade = student_data["grade"]
         else:
             new_student = Student(
-                its=student_data["its"],
                 name=student_data["name"],
                 grade=student_data["grade"],
                 daur_id=daur_id,
@@ -190,7 +192,6 @@ def get_students(id):
         {
             "id": student.id,
             "name": student.name,
-            "its": student.its,
             "grade": student.grade,
             "daur_id": id,
         }
@@ -203,10 +204,9 @@ def get_students(id):
 @sm_app.route("/fetchdaurs", methods=["GET"])
 @jwt_required()
 def fetch_daurs():
-    moallim_its = get_jwt_identity()
-    moallim = Moallim.query.filter_by(its=moallim_its).first()
+    moallim_email = get_jwt_identity()
+    moallim = Moallim.query.filter_by(email=moallim_email).first()
     print("fetch daurs code")
-    # daurs = Daur.query.filter_by(moallim_id=moallim_its).all()
     if moallim:
         daurs = moallim.daurs
         daurs_list = [daur.to_dict() for daur in daurs]
@@ -269,7 +269,7 @@ def login():
     moallim = Moallim.query.filter_by(email=username).first()
 
     if moallim and moallim.check_password(password):
-        access_token = create_access_token(identity=str(moallim.its))
+        access_token = create_access_token(identity=moallim.email)
         # print("login complete")
         return jsonify({"access_token": access_token})
     else:
@@ -313,14 +313,14 @@ def calculate_daur():
     # pass
     try:
         payload = request.json
-        moallim_its = int(get_jwt_identity())
+        moallim_email = get_jwt_identity()
         daur_id = payload.get("daur_id")
-        print("Moallim: ", moallim_its)
-        print(type(moallim_its))
+        print("Moallim: ", moallim_email)
+        print(type(moallim_email))
         print("calculate started")
         result = calculate_ayat_assignment(payload)
         print("calculate ended")
-        json_to_send_to_client = transform_json(result, moallim_its, daur_id)
+        json_to_send_to_client = transform_json(result, moallim_email, daur_id)
 
         return json_to_send_to_client, 200
         # return "Success", 200
