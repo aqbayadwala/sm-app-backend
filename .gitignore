@@ -1,6 +1,6 @@
 __pycache__
-.smvenv/
+.smvenv
 .flaskenv
 ignore
 sm_app.db
-migrations/
+migrations

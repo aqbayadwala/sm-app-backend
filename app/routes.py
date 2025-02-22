@@ -67,6 +67,7 @@ def webhook():
 @sm_app.route("/register", methods=["POST"])
 def register():
     try:
+        print("I reached here")
         data = request.json
         if data is None:
             return jsonify(error="Invalid JSON"), 400
@@ -77,7 +78,7 @@ def register():
 
         user = Moallim(name=name, email=email)
         user.set_password(password)
-
+        print("I reached till password")
         db.session.add(user)
         db.session.commit()
 
