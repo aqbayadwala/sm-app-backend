@@ -179,7 +179,7 @@ def calculate_ayat_assignment(payload):
     grades = get_student_grades(student_ids)
 
     is_students_workload = payload.get("is_students_workload")
-    print(is_students_workload)
+    # print(is_students_workload)
 
     workload = {student_id: 0 for student_id in grades.keys()}
 
@@ -234,18 +234,18 @@ def calculate_ayat_assignment(payload):
             "C": grade_c_lines,
             "D": grade_d_lines,
         }
-        print("Total lines: ", total_lines)
-        print("Grades: ", grades)
-        print("grade_percentages: ", grade_percentages)
-        print("grade_lines: ", grade_lines)
+        # print("Total lines: ", total_lines)
+        # print("Grades: ", grades)
+        # print("grade_percentages: ", grade_percentages)
+        # print("grade_lines: ", grade_lines)
         workload = assign_lines(total_lines, grades, grade_lines)
-        print("workload printed inside calculate_ayat_assignment: ", workload)
+        # print("workload printed inside calculate_ayat_assignment: ", workload)
         ayat_metadata = generate_ayat_metadata(
             from_surat_num, from_ayat, to_surat_num, to_ayat
         )
-        print(ayat_metadata)
+        # print(ayat_metadata)
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
-        print("Ayat ranges: ", ayat_ranges)
+        # print("Ayat ranges: ", ayat_ranges)
         return ayat_ranges
 
     else:
@@ -279,18 +279,18 @@ def calculate_ayat_assignment(payload):
             "C": grade_c_lines,
             "D": grade_d_lines,
         }
-        print("Total lines: ", total_lines)
-        print("Grades: ", grades)
-        print("grade_percentages: ", grade_percentages)
-        print("grade_lines: ", grade_lines)
+        # print("Total lines: ", total_lines)
+        # print("Grades: ", grades)
+        # print("grade_percentages: ", grade_percentages)
+        # print("grade_lines: ", grade_lines)
         workload = assign_lines(total_lines, grades, grade_lines)
-        print("workload printed inside calculate_ayat_assignment: ", workload)
+        # print("workload printed inside calculate_ayat_assignment: ", workload)
         ayat_metadata = generate_ayat_metadata(
             from_surat_num, from_ayat, to_surat_num, to_ayat
         )
         print(ayat_metadata)
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
-        print("Ayat ranges: ", ayat_ranges)
+        # print("Ayat ranges: ", ayat_ranges)
 
         return ayat_ranges
 
