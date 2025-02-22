@@ -15,7 +15,7 @@ class Moallim(db.Model):
     email: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     # darajah: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
-    daurs = relationship("Daur", back_populates="moallim")
+    daurs = relationship("Daur", back_populates="moallim", cascade="all, delete-orphan")
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
