@@ -80,9 +80,9 @@ def register():
         user = Moallim(name=name, email=email)
         user.set_password(password)
         print("I reached till password")
+        print("user: ", user)
         db.session.add(user)
         db.session.commit()
-
         return jsonify({"message": "Successfully registered. Please login"})
 
     except Exception as e:
