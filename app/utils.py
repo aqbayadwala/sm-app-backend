@@ -341,26 +341,6 @@ def assign_lines(total_lines, student_grades, grade_lines):
     return workload
 
 
-def jsonify_dict_with_non_string_keys(data):
-    """
-    Convert a dictionary to a JSON string, ensuring all keys are strings.
-
-    Args:
-        data (dict): The input dictionary.
-
-    Returns:
-        str: The JSON string representation of the dictionary.
-    """
-    if not isinstance(data, dict):
-        raise ValueError("Input must be a dictionary.")
-
-    # Convert all keys to strings
-    json_ready_data = {str(key): value for key, value in data.items()}
-
-    # Convert the dictionary to a JSON string
-    return json.dumps(json_ready_data)
-
-
 def assign_ayat_ranges(workload, ayat_metadata):
     """
     Assign ayat ranges to students and Sadr based on workloads.
@@ -421,13 +401,14 @@ def assign_ayat_ranges(workload, ayat_metadata):
 
             # print("workload student: ", workload)
             for student in workload:
-                # print("workload student: ", workload[student])
-                if workload[student] == 1:  # D-grade student condition
-                    assignments[student].append(
-                        ((surat_num, ayat_number), (surat_num, ayat_number))
-                    )
-                    current_index += 1
-                    break
+                if not assignments[student]:
+                    # print("workload student: ", workload[student])
+                    if workload[student] == 1:  # D-grade student condition
+                        assignments[student].append(
+                            ((surat_num, ayat_number), (surat_num, ayat_number))
+                        )
+                        current_index += 1
+                        break
         else:
             # Assign all remaining ayat to Sadr
             start_tuple = (surat_num, ayat_number)
@@ -518,3 +499,23 @@ def transform_json(server_json, moallim_email, daur_id):
                 )
 
     return result
+
+
+def jsonify_dict_with_non_string_keys(data):
+    """
+    Convert a dictionary to a JSON string, ensuring all keys are strings.
+
+    Args:
+        data (dict): The input dictionary.
+
+    Returns:
+        str: The JSON string representation of the dictionary.
+    """
+    if not isinstance(data, dict):
+        raise ValueError("Input must be a dictionary.")
+
+    # Convert all keys to strings
+    json_ready_data = {str(key): value for key, value in data.items()}
+
+    # Convert the dictionary to a JSON string
+    return json.dumps(json_ready_data)
