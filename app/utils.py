@@ -289,6 +289,7 @@ def calculate_ayat_assignment(payload):
             from_surat_num, from_ayat, to_surat_num, to_ayat
         )
         # print(ayat_metadata)
+        print("assigning ayaat started")
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
         # print("Ayat ranges: ", ayat_ranges)
 
@@ -377,15 +378,16 @@ def assign_ayat_ranges(workload, ayat_metadata):
 
     # Ensure Sadr is assigned first
     students = ["Sadr"] + [student for student in workload if student != "Sadr"]
-
+    print("All okay till students: ", students)
     for student in students:
         lines = workload[student]
         total_lines_assigned = 0
         start_tuple = None
+        print("Current student: ", student)
 
         while current_index < len(ayat_metadata) and total_lines_assigned < lines:
             surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
-
+            print("started while loop")
             # Start the range if not already started
             if start_tuple is None:
                 start_tuple = (surat_num, ayat_number)
