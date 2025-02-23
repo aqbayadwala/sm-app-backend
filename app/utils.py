@@ -416,6 +416,7 @@ def assign_ayat_ranges(workload, ayat_metadata):
         # Check if the current ayat is 1 line
         if ayat_length == 1:
             for student in workload:
+                print("workload student: ", workload[student])
                 if workload[student] == 1:  # D-grade student condition
                     assignments[student].append(
                         ((surat_num, ayat_number), (surat_num, ayat_number))
