@@ -1,6 +1,7 @@
 # Import statements
 
 # Import app object, db object, and jwt object instances
+from flask_jwt_extended.internal_utils import get_jwt_manager
 from app import sm_app, db, jwt
 
 # Helper functions
@@ -79,6 +80,7 @@ def register():
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
+        print(f"{email} registered.")
         return jsonify({"message": "Successfully registered. Please login"})
 
     except Exception as e:
@@ -102,7 +104,7 @@ def create_daur():
         new_daur = Daur(name=daur_name, moallim_id=moallim.id)
         db.session.add(new_daur)
         db.session.commit()
-
+        print(f"{moallim_email} created a daur named {daur_name}")
         daur_id = new_daur.id
 
         return jsonify({"daurId": daur_id}), 200
@@ -113,29 +115,30 @@ def create_daur():
 @jwt_required()
 def addstudents():
     data = request.json
+    moallim_email = get_jwt_identity()
     students = data[1]
-    print("data: ", data)
-    print("Students: ", students)
+    # print("data: ", data)
+    # print("Students: ", students)
     daur_id = data[0]["daurId"]
 
     # fetch already added students
     current_students = Student.query.filter_by(daur_id=daur_id).all()
-    print("current_students: ", current_students)
+    # print("current_students: ", current_students)
     # check which students came from server after edit
     current_ids = {student.id for student in current_students}
-    print("current_ids: ", current_ids)
+    # print("current_ids: ", current_ids)
     # check which students are new
     new_ids = {student["id"] for student in students}
-    print("New Ids: ", new_ids)
+    # print("New Ids: ", new_ids)
     # check which students got deleted
     ids_to_delete = current_ids - new_ids
-    print("Ids to delete: ", ids_to_delete)
+    # print("Ids to delete: ", ids_to_delete)
 
     # delete the students from db
     Student.query.filter_by(daur_id=daur_id).filter(
         Student.id.in_(ids_to_delete)
     ).delete(synchronize_session=False)
-    print("I completed this ids to delete query")
+    # print("I completed this ids to delete query")
     students_to_delete = (
         db.session.execute(
             db.select(Student)
@@ -145,7 +148,7 @@ def addstudents():
         .scalars()
         .all()
     )
-    print("Students to delete: ", students_to_delete)
+    # print("Students to delete: ", students_to_delete)
     for student in students_to_delete:
         db.session.delete(student)
 
@@ -169,6 +172,7 @@ def addstudents():
     try:
         # print("code before commit")
         db.session.commit()
+        print(f"{moallim_email} added students: ", students)
         # print("code after commit")
     except IntegrityError as e:
         db.session.rollback()
@@ -204,7 +208,7 @@ def get_students(id):
 def fetch_daurs():
     moallim_email = get_jwt_identity()
     moallim = Moallim.query.filter_by(email=moallim_email).first()
-    print("fetch daurs code")
+    # print("fetch daurs code")
     if moallim:
         daurs = moallim.daurs
         daurs_list = [daur.to_dict() for daur in daurs]
@@ -254,7 +258,7 @@ def auth_check():
     try:
         return jsonify({"authenticated": True}), 200
     except Exception as e:
-        print("failed auth check")
+        # print("failed auth check")
         return jsonify({"message": str(e)}), 401
 
 
@@ -269,9 +273,10 @@ def login():
     if moallim and moallim.check_password(password):
         access_token = create_access_token(identity=moallim.email)
         # print("login complete")
+        print(f"{username} logged in.")
         return jsonify({"access_token": access_token})
     else:
-        print("failed login")
+        # print("failed login")
         return jsonify({"message": "failed login"}), 401
 
 

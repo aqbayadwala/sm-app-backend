@@ -288,7 +288,7 @@ def calculate_ayat_assignment(payload):
         ayat_metadata = generate_ayat_metadata(
             from_surat_num, from_ayat, to_surat_num, to_ayat
         )
-        print(ayat_metadata)
+        # print(ayat_metadata)
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
         # print("Ayat ranges: ", ayat_ranges)
 
