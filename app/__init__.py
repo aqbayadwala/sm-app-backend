@@ -20,4 +20,4 @@ CORS(sm_app, origins=[cors_origin], supports_credentials=True)
 bcrypt = Bcrypt(sm_app)
 jwt = JWTManager(sm_app)
 
-from app import routes
+from app import routes, models

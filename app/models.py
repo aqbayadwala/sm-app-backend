@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 class Moallim(db.Model):
-    __bind_key__ = "users"
+    # __bind_key__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(64))
@@ -27,7 +27,7 @@ class Moallim(db.Model):
 
 
 class Daur(db.Model):
-    __bind_key__ = "users"
+    # __bind_key__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -47,7 +47,7 @@ class Daur(db.Model):
 
 
 class Student(db.Model):
-    __bind_key__ = "users"
+    # __bind_key__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(64))
@@ -68,7 +68,7 @@ class Student(db.Model):
 
 
 class BlockListedTokens(db.Model):
-    __bind_key__ = "users"
+    # __bind_key__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     jti: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(

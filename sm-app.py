@@ -1,5 +1,5 @@
 from app import sm_app, db
-from app.models import Moallim
+from app.models import Moallim, Daur, Student
 
 
 @sm_app.shell_context_processor

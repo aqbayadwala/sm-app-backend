@@ -14,8 +14,9 @@ class Config:
         "DATABASE_URL"
     ) or "sqlite:///" + os.path.join(basedir, "sm_app.db")
     SQLALCHEMY_BINDS = {
-        "users": "sqlite:///" + os.path.join(basedir, "sm_app.db"),
-        "quran": "sqlite:///" + os.path.join(basedir, "quran-metadata.db"),
+        # "users": "sqlite:///" + os.path.join(basedir, "sm_app.db"),
+        "quran": "sqlite:///"
+        + os.path.join(basedir, "quran-metadata.db"),
     }
 
     JWT_TOKEN_LOCATION = ["headers", "cookies", "json", "query_string"]
