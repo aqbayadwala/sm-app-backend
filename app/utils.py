@@ -245,7 +245,7 @@ def calculate_ayat_assignment(payload):
         )
         # print(ayat_metadata)
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
-        # print("Ayat ranges: ", ayat_ranges)
+        print("Ayat ranges: ", ayat_ranges)
         return ayat_ranges
 
     else:
