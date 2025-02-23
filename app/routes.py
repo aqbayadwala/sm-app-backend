@@ -321,6 +321,7 @@ def calculate_daur():
         # print("Moallim: ", moallim_email)
         # print(type(moallim_email))
         # print("calculate started")
+        print(f"{moallim_email} started calculating a daur")
         result = calculate_ayat_assignment(payload)
         # print("calculate ended")
         json_to_send_to_client = transform_json(result, moallim_email, daur_id)
