@@ -235,7 +235,7 @@ def calculate_ayat_assignment(payload):
             "D": grade_d_lines,
         }
         # print("Total lines: ", total_lines)
-        print("Grades: ", grades)
+        # print("Grades: ", grades)
         # print("grade_percentages: ", grade_percentages)
         # print("grade_lines: ", grade_lines)
         workload = assign_lines(total_lines, grades, grade_lines)
@@ -246,7 +246,7 @@ def calculate_ayat_assignment(payload):
         # print(ayat_metadata)
 
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
-        print("Ayat ranges: ", ayat_ranges)
+        # print("Ayat ranges: ", ayat_ranges)
         return ayat_ranges
 
     else:
@@ -281,7 +281,7 @@ def calculate_ayat_assignment(payload):
             "D": grade_d_lines,
         }
         # print("Total lines: ", total_lines)
-        print("Grades: ", grades)
+        # print("Grades: ", grades)
         # print("grade_percentages: ", grade_percentages)
         # print("grade_lines: ", grade_lines)
         workload = assign_lines(total_lines, grades, grade_lines)
@@ -290,7 +290,7 @@ def calculate_ayat_assignment(payload):
             from_surat_num, from_ayat, to_surat_num, to_ayat
         )
         # print(ayat_metadata)
-        print("assigning ayaat started")
+        # print("assigning ayaat started")
         ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
         # print("Ayat ranges: ", ayat_ranges)
 
@@ -379,12 +379,12 @@ def assign_ayat_ranges(workload, ayat_metadata):
 
     # Ensure Sadr is assigned first
     students = ["Sadr"] + [student for student in workload if student != "Sadr"]
-    print("All okay till students: ", students)
+    # print("All okay till students: ", students)
     for student in students:
         lines = workload[student]
         total_lines_assigned = 0
         start_tuple = None
-        print("Current student: ", student)
+        # print("Current student: ", student)
 
         while current_index < len(ayat_metadata) and total_lines_assigned < lines:
             surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
@@ -414,12 +414,12 @@ def assign_ayat_ranges(workload, ayat_metadata):
     while current_index < len(ayat_metadata):
         surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
 
-        print("workload student: ", workload)
+        # print("workload student: ", workload)
         # Check if the current ayat is 1 line
-        print("ayat length: ", ayat_length)
+        # print("ayat length: ", ayat_length)
         if ayat_length == 1:
 
-            print("workload student: ", workload)
+            # print("workload student: ", workload)
             for student in workload:
                 # print("workload student: ", workload[student])
                 if workload[student] == 1:  # D-grade student condition

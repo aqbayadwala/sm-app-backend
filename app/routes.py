@@ -324,7 +324,7 @@ def calculate_daur():
         result = calculate_ayat_assignment(payload)
         # print("calculate ended")
         json_to_send_to_client = transform_json(result, moallim_email, daur_id)
-        # print(f"{moallim_email}  calculated a daur")
+        print(f"{moallim_email}  calculated a daur")
         return json_to_send_to_client, 200
         # return "Success", 200
     except Exception as e:
