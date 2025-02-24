@@ -363,19 +363,21 @@ def get_accounts():
 def delete_moallim():
     data = request.get_json()
     moallim_ids = data.get("moallim_ids")
+    admin_email = "aqbayadwala@gmail.com"
+    user_email = data.get("email")
 
-    # deleted_count = Moallim.query.filter(Moallim.id.in_(moallim_ids)).delete(
-    #     synchronize_session=False
-    # )
+    if user_email == admin_email:
+        moallims = Moallim.query.filter(Moallim.id.in_(moallim_ids)).all()
 
-    moallims = Moallim.query.filter(Moallim.id.in_(moallim_ids)).all()
+        for moallim in moallims:
+            db.session.delete(moallim)
 
-    for moallim in moallims:
-        db.session.delete(moallim)
+        db.session.commit()
 
-    db.session.commit()
+        return jsonify({"message": "Moallim(s) deleted successfully"})
 
-    return jsonify({"message": "Moallim(s) deleted successfully"})
+    else:
+        return jsonify({"message": "you are not an admin"})
 
 
 #
