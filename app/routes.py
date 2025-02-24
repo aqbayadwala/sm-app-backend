@@ -274,7 +274,7 @@ def login():
         access_token = create_access_token(identity=moallim.email)
         # print("login complete")
         print(f"{username} logged in.")
-        return jsonify({"access_token": access_token})
+        return jsonify({"access_token": access_token, "email": username})
     else:
         # print("failed login")
         return jsonify({"message": "failed login"}), 401
@@ -332,6 +332,50 @@ def calculate_daur():
         print("Error:", str(e))
         # traceback.print_exc()  # Logs full stack trace
         return "error", 500
+
+
+@sm_app.route("/getaccounts", methods=["GET"])
+@jwt_required()
+def get_accounts():
+    moallims = Moallim.query.all()
+    data = []
+
+    for moallim in moallims:
+        moallim_data = {
+            "id": moallim.id,
+            "name": moallim.name,
+            "email": moallim.email,
+            "daurs": [],
+        }
+
+        for daur in moallim.daurs:
+            moallim_data["daurs"].append(
+                {"id": daur.id, "name": daur.name, "student_count": len(daur.students)}
+            )
+
+        data.append(moallim_data)
+
+    return jsonify(data), 200
+
+
+@sm_app.route("/deletemoallim", methods=["POST"])
+@jwt_required()
+def delete_moallim():
+    data = request.get_json()
+    moallim_ids = data.get("moallim_ids")
+
+    # deleted_count = Moallim.query.filter(Moallim.id.in_(moallim_ids)).delete(
+    #     synchronize_session=False
+    # )
+
+    moallims = Moallim.query.filter(Moallim.id.in_(moallim_ids)).all()
+
+    for moallim in moallims:
+        db.session.delete(moallim)
+
+    db.session.commit()
+
+    return jsonify({"message": "Moallim(s) deleted successfully"})
 
 
 #
