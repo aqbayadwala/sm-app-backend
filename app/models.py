@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 from typing import Optional
-from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint, DateTime
+from sqlalchemy import ForeignKey, String, Integer, UniqueConstraint, DateTime, func
 from app import bcrypt
 from datetime import datetime
 
@@ -14,6 +14,9 @@ class Moallim(db.Model):
     email: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     # darajah: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=True, default=func.now()
+    )
     daurs = relationship("Daur", back_populates="moallim", cascade="all, delete-orphan")
 
     def set_password(self, password):

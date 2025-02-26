@@ -1,6 +1,7 @@
 # Import statements
 
 # Import app object, db object, and jwt object instances
+from datetime import tzinfo
 from flask_jwt_extended.internal_utils import get_jwt_manager
 from app import sm_app, db, jwt
 
@@ -19,6 +20,8 @@ from app.utils import (
     jsonify_dict_with_non_string_keys,
     transform_json,
 )
+
+from pytz import timezone, UTC
 import subprocess
 
 # Import models
@@ -337,12 +340,22 @@ def calculate_daur():
 @sm_app.route("/getaccounts", methods=["GET"])
 @jwt_required()
 def get_accounts():
+    ist = timezone("Asia/Kolkata")
     moallims = Moallim.query.all()
     data = []
 
     for moallim in moallims:
+
+        created_at_ist = (
+            moallim.created_at.replace(tzinfo=UTC)
+            .astimezone(ist)
+            .strftime("%a, %d %b %Y %H:%M:%S IST")
+            if moallim.created_at
+            else "N/A"
+        )
         moallim_data = {
             "id": moallim.id,
+            "createdAt": created_at_ist,
             "name": moallim.name,
             "email": moallim.email,
             "daurs": [],
