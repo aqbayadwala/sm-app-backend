@@ -2,6 +2,9 @@ from sqlalchemy import func
 from app.models import AyatLengths, SuratMetaData, Student, Moallim, Daur
 from app import db
 import json
+import cProfile
+import pstats
+import io
 
 
 # get ayat length sum if surat are same
@@ -292,7 +295,7 @@ def calculate_ayat_assignment(payload):
         )
         # print(ayat_metadata)
         # print("assigning ayaat started")
-        ayat_ranges = assign_ayat_ranges(workload, ayat_metadata)
+        ayat_ranges = profile_assign_ayat_ranges(workload, ayat_metadata)
         # print("Ayat ranges: ", ayat_ranges)
 
         return ayat_ranges
@@ -550,3 +553,19 @@ def jsonify_dict_with_non_string_keys(data):
 
     # Convert the dictionary to a JSON string
     return json.dumps(json_ready_data)
+
+
+def profile_assign_ayat_ranges(workload, ayat_metadata):
+    pr = cProfile.Profile()
+    pr.enable()
+
+    # Call the function
+    result = assign_ayat_ranges(workload, ayat_metadata)
+
+    pr.disable()
+    s = io.StringIO()
+    ps = pstats.Stats(pr, stream=s).sort_stats(pstats.SortKey.CUMULATIVE)
+    ps.print_stats(20)  # Show the top 20 slowest functions
+    print(s.getvalue())
+
+    return result
