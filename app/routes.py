@@ -43,7 +43,7 @@ def home():
 
 # Callback function to check if a JWT exists in the database BlockListedTokens
 @jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+def check_if_token_revoked(jwt_payload):
     jti = jwt_payload["jti"]
     token = db.session.query(BlockListedTokens.id).filter_by(jti=jti).scalar()
     return token is not None

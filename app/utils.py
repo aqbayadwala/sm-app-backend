@@ -172,6 +172,7 @@ def calculate_ayat_assignment(payload):
 
     from_surat_num = get_surat_num(from_surat_name)
     to_surat_num = get_surat_num(to_surat_name)
+    print(f"Calculating daur from surat {from_surat_name} to {to_surat_name}")
 
     surat_nums = get_surat_nums(from_surat_name, to_surat_name)
     total_lines = get_total_lines(from_surat_num, from_ayat, to_surat_num, to_ayat)
