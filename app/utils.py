@@ -401,7 +401,11 @@ def assign_ayat_ranges(workload, ayat_metadata):
         if ayat_length == 1:
 
             # print("workload student: ", workload)
+
             for student in workload:
+                print("Workload:", workload)
+                print("Assignments:", assignments)
+                print("Current student:", student)
                 if not assignments[student]:
                     # print("workload student: ", workload[student])
                     if workload[student] == 1:  # D-grade student condition
