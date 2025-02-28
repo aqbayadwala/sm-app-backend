@@ -391,42 +391,68 @@ def assign_ayat_ranges(workload, ayat_metadata):
             )
             assignments[student].append((start_tuple, end_tuple))
 
-    # Handle remaining ayat (if any)
-    while current_index < len(ayat_metadata):
-        surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
-
-        # print("workload student: ", workload)
-        # Check if the current ayat is 1 line
-        # print("ayat length: ", ayat_length)
-        if ayat_length == 1:
-
-            # print("workload student: ", workload)
-
-            for student in workload:
-                print("Workload:", workload)
-                print("Assignments:", assignments)
-                print("Current student:", student)
-                if not assignments[student]:
-                    # print("workload student: ", workload[student])
-                    if workload[student] == 1:  # D-grade student condition
-                        assignments[student].append(
-                            ((surat_num, ayat_number), (surat_num, ayat_number))
-                        )
-                        current_index += 1
-                        break
-        else:
-            # Assign all remaining ayat to Sadr
-            start_tuple = (surat_num, ayat_number)
-            end_tuple = start_tuple
-
+    # Explicitly handle D-grade students (workload == 1) and ensure they only get ayat with length == 1
+    for student in workload:
+        if workload[student] == 1 and not assignments[student]:
             while current_index < len(ayat_metadata):
-                surat_num, ayat_number, _ = ayat_metadata[current_index]
-                end_tuple = (surat_num, ayat_number)
-                current_index += 1
+                surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
 
-            assignments["Sadr"].append((start_tuple, end_tuple))
-            break
+                if ayat_length == 1:  # Only assign if ayat is exactly 1 line
+                    assignments[student].append(
+                        ((surat_num, ayat_number), (surat_num, ayat_number))
+                    )
+                    current_index += 1
+                    break  # Move to the next student after assigning
+                current_index += 1  # Skip over ayat that are longer than 1 line
 
+    # Handle remaining ayat (assign all to Sadr)
+    if current_index < len(ayat_metadata):
+        start_tuple = (ayat_metadata[current_index][0], ayat_metadata[current_index][1])
+        end_tuple = start_tuple
+
+        while current_index < len(ayat_metadata):
+            surat_num, ayat_number, _ = ayat_metadata[current_index]
+            end_tuple = (surat_num, ayat_number)
+            current_index += 1
+
+        assignments["Sadr"].append((start_tuple, end_tuple))
+
+    # # Handle remaining ayat (if any)
+    # while current_index < len(ayat_metadata):
+    #     surat_num, ayat_number, ayat_length = ayat_metadata[current_index]
+    #
+    #     # print("workload student: ", workload)
+    #     # Check if the current ayat is 1 line
+    #     # print("ayat length: ", ayat_length)
+    #     if ayat_length == 1:
+    #
+    #         # print("workload student: ", workload)
+    #
+    #         for student in workload:
+    #             print("Workload:", workload)
+    #             print("Assignments:", assignments)
+    #             print("Current student:", student)
+    #             if not assignments[student]:
+    #                 # print("workload student: ", workload[student])
+    #                 if workload[student] == 1:  # D-grade student condition
+    #                     assignments[student].append(
+    #                         ((surat_num, ayat_number), (surat_num, ayat_number))
+    #                     )
+    #                     current_index += 1
+    #                     break
+    #     else:
+    #         # Assign all remaining ayat to Sadr
+    #         start_tuple = (surat_num, ayat_number)
+    #         end_tuple = start_tuple
+    #
+    #         while current_index < len(ayat_metadata):
+    #             surat_num, ayat_number, _ = ayat_metadata[current_index]
+    #             end_tuple = (surat_num, ayat_number)
+    #             current_index += 1
+    #
+    #         assignments["Sadr"].append((start_tuple, end_tuple))
+    #         break
+    #
     return assignments
 
 
