@@ -11,7 +11,7 @@ import os
 load_dotenv(dotenv_path=".flaskenv")
 
 cors_origin = os.getenv("CORS_ORIGIN", "http://localhost:5173")
-
+print(cors_origin)
 sm_app = Flask(__name__)
 sm_app.config.from_object(Config)
 db = SQLAlchemy(sm_app)
